@@ -1,94 +1,101 @@
 #include <iostream>
-#include <string>
+#include "student.h"
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 
-class Chef {
-public:
-    Chef(string n);
-    ~Chef();
-    string getName();
-    int makeSalad(int s);
-    int makeSoup(int s);
+int main ()
+{
+    int selection = 0;
+    vector<Student *> studentList;
+    string name;
+    int age;
 
-protected:
-    string chefName;
+    do
+    {
+        cout<<endl;
+        cout<<"Valitse toiminto"<<endl;
+        cout<<"Lisaa opiskelija = 0"<<endl;
+        cout<<"Tulosta kaikki opiskelijat = 1"<<endl;
+        cout<<"Jarjesta nimen mukaan = 2"<<endl;
+        cout<<"Jarjesta ian mukaan = 3"<<endl;
+        cout<<"Etsi opiskelija = 4"<<endl;
+        cin>>selection;
 
-};
+        switch(selection)
+        {
+        case 0:
+        {
+            cout<<"Anna nimi:"<<endl;
+            cin>>name;
+            cout<<"Anna ika:"<<endl;
+            cin>>age;
+            studentList.emplace_back(new Student(name,age));
+            break;
+        }
+        case 1:
+        {
+            for(auto& student : studentList)
+            {
+                student->printStudentInfo();
+            }
+            break;
+        }
+        case 2:
+        {
+            sort(studentList.begin(), studentList.end(),
+                 [](Student * a, Student * b){ return a->getName() < b->getName(); });
 
-class ItalianChef : public Chef {
-public:
-    ItalianChef(string n);
-    ~ItalianChef();
-    bool askSecret(string n, int s, int m);
+            for(auto& student : studentList)
+            {
+                student->printStudentInfo();
+            }
+            break;
+        }
+        case 3:
+        {
+            sort(studentList.begin(), studentList.end(),
+                 [](Student * a, Student * b){ return a->getAge() < b->getAge(); });
 
-private:
-    string password = "pizza";
-    int flour;
-    int water;
-    int makepizza(int s, int m);
+            for(auto& student : studentList)
+            {
+                student->printStudentInfo();
+            }
+            break;
+        }
+        case 4:
+        {
+            cout<<"Anna haettavan opiskelijan nimi:"<<endl;
+            cin>>name;
 
-};
+            auto it = find_if(studentList.begin(), studentList.end(),
+                              [name](Student * student){
+                                  return name == student->getName();
+                              });
 
-Chef::Chef(string n) {
-    chefName=n;
-    cout<<"Chef "<<chefName<<" konstruktori "<<endl;
-}
-
-Chef::~Chef() {
-    cout<<"Chef "<<chefName<<" destruktori "<<endl;
-}
-
-string Chef::getName() {
-    return chefName;
-}
-
-int Chef::makeSalad(int s) {
-    int portions=s/5;
-    cout<<"Chef "<<chefName<<" with "<<s<<" items can make salad "<<portions<<" portions "<<endl;
-    return portions;
-}
-
-int Chef::makeSoup(int s) {
-    int portions=s/3;
-    cout<<"Chef "<<chefName<<" with "<<s<<" items can make soup "<<portions<<" portions "<<endl;
-    return portions;
-}
-
-ItalianChef::ItalianChef(string n):Chef(n) {
-    flour=0;
-    water=0;
-    cout<<"ItalianChef "<<chefName<<" konstruktori "<<endl;
-}
-
-ItalianChef::~ItalianChef() {
-    cout<<"ItalianChef "<<chefName<<" destruktori "<<endl;
-}
-
-bool ItalianChef::askSecret(string n,int s,int m){
-    flour=s;
-    water=m;
-
-    if(n==password) {
-        cout<<"Password ok!"<<endl;
-        int pizzas=makepizza(flour,water);
-        cout<<"ItalianChef "<< chefName <<" with "<<flour<<" flour and "<<water<<" water can make "<<pizzas<<" pizzas "<<endl;
-        return true;
+            if(it != studentList.end())
+            {
+                cout<<"Opiskelija loytyi:"<<endl;
+                (*it)->printStudentInfo();
+            }
+            else
+            {
+                cout<<"Opiskelijaa ei loytynyt"<<endl;
+            }
+            break;
+        }
+        default:
+            cout<<"Virhe, ohjelma sulkeutuu"<<endl;
+            break;
+        }
     }
-    cout<<"Wrong password!"<<endl;
-    return false;
-}
+    while(selection < 5);
 
-int ItalianChef::makepizza(int s,int m) {
-    return min(s/5,m/5);
-}
-int main(){
-    Chef c("Gordon");
-    c.makeSalad(11);
-    c.makeSoup(14);
-
-    ItalianChef i("Mario");
-    i.makeSalad(9);
-    i.askSecret("pizza",12,12);
+    for(auto& student : studentList)
+    {
+        delete student;
+    }
 
     return 0;
 }
