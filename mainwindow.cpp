@@ -1,11 +1,17 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    pReader = new reader(this);
+    pReader->readInfo();
+    connect(pReader, &reader::sendSerialData,
+            this,&MainWindow::handleCardNumber);
+    qDebug()<<"Aukesiko Portti"<<pReader->open();
 }
 
 MainWindow::~MainWindow()
@@ -13,20 +19,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButtonCount_clicked()
+void MainWindow::handleCardNumber(QByteArray A)
 {
-    bool ok;
-    int value = ui->lineEditCount->text().toInt(&ok);
-
-    if (!ok)
-        value = 0;
-
-    value++;
-    ui->lineEditCount->setText(QString::number(value));
+    qDebug()<<"MainWindow handleCardNumber";
+    qDebug()<<"CardNumber = "<<A;
+    ui->lineEdit->setText(QString::number(A.toInt()));
 }
-
-void MainWindow::on_pushButtonReset_clicked()
-{
-    ui->lineEditCount->setText("0");
-}
-

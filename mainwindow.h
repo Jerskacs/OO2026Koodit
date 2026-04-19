@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QByteArray>
+#include "reader.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -14,34 +16,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
-private slots:
-    void on_pushButtonCount_clicked();
-
-    void on_pushButtonReset_clicked();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+public slots:
+    void handleCardNumber(QByteArray);
 
 private:
     Ui::MainWindow *ui;
+    reader * pReader;
 };
 #endif // MAINWINDOW_H
